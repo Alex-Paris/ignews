@@ -56,7 +56,10 @@ export const getStaticProps: GetStaticProps = async () => {
 		return {
 			slug: post.uid,
 			title: post.data.title,
-			excerpt: [post.data.content[0]],
+			excerpt: [{
+				...post.data.content[0],
+				text: post.data.content[0].text.slice(0, 256) + '...'
+			}],
 			updatedAt: new Date(post.last_publication_date).toLocaleDateString('pt-BR', {
 				day: '2-digit',
 				month: 'long',
