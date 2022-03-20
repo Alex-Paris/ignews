@@ -1,4 +1,4 @@
-import { GetStaticProps } from 'next'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head';
 import { useSession } from 'next-auth/react'
 import { RichTextField } from '@prismicio/types';
@@ -56,9 +56,16 @@ export default function PostPreview({ post }: PostPreviewProps) {
 	)
 }
 
-export const getStaticPaths = () => {
+export const getStaticPaths: GetStaticPaths = async () => {
 	return {
-		paths: [],
+		//Set a static variable loadded before in another static page
+		paths: [
+			// { params: { slug: 'the-meaning-of-life' } }
+		],
+		//fallback
+		//  true: load the page before getting information from getStaticProps
+		//  false: return 404 if getStaticProps was not loadded
+		//  blocking: wait server side rendering before showing page
 		fallback: 'blocking'
 	}
 }
@@ -87,6 +94,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 	return {
 		props: {
 			post
-		}
+		},
+		redirect: 60 * 30 // 30 minutes
 	}
 }
