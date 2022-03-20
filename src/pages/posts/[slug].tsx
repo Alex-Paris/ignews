@@ -12,7 +12,6 @@ interface PostProps {
 	post: {
 		slug: string;
 		title: string;
-		excerpt: RichTextField;
 		content: RichTextField;
 		updatedAt: string;
 	}
@@ -42,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, params }) =>
 	const session = await getSession({ req })
 	const { slug } = params
 
-	if (!session.activeSubscription) {
+	if (!session?.activeSubscription) {
 		return {
 			redirect: {
 				destination: '/',
@@ -58,10 +57,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, params }) =>
 	const post = {
 		slug,
 		title: response.data.title,
-		excerpt: [{
-			...response.data.content[0],
-			text: response.data.content[0].text.slice(0, 400) + '...'
-		}],
 		content: response.data.content,
 		updatedAt: new Date(response.last_publication_date).toLocaleDateString('pt-BR', {
 			day: '2-digit',
