@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from 'next-auth/react';
 import { query as q } from "faunadb";
+import Stripe from "stripe";
 
 import { fauna } from "../../services/fauna";
-import { stripe } from "../../services/stripe";
 
 type User = {
 	ref: {
@@ -17,6 +17,17 @@ type User = {
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 	if (req.method === 'POST') {
 		const session = await getSession({ req });
+
+		const stripe = new Stripe(
+			process.env.STRIPE_API_KEY,
+			{
+				apiVersion: '2020-08-27',
+				appInfo: {
+					name: 'ignews',
+					version: '0.1.0'
+				}
+			}
+		)
 
 		const user = await fauna.query<User>(
 			q.Get(
@@ -34,7 +45,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 				email: session.user.email,
 				// metadata
 			})
-	
+
 			await fauna.query(
 				q.Update(
 					q.Ref(q.Collection('users'), user.ref.id),

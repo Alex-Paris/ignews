@@ -1,13 +1,24 @@
 import { query as q } from "faunadb"
+import Stripe from "stripe";
 
-import { fauna } from "../../services/fauna"
-import { stripe } from "../../services/stripe"
+import { fauna } from "../../../services/fauna"
 
 export async function saveSubscription(
 	subscriptionId: string,
 	customerId: string,
 	createAction = false
 ) {
+	const stripe = new Stripe(
+		process.env.STRIPE_API_KEY,
+		{
+			apiVersion: '2020-08-27',
+			appInfo: {
+				name: 'ignews',
+				version: '0.1.0'
+			}
+		}
+	)
+
 	const userRef = await fauna.query(
 		q.Select(
 			"ref",

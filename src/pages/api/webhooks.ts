@@ -2,9 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Readable } from 'stream'
 import Stripe from "stripe";
 
-import { stripe } from "../../services/stripe";
-
-import { saveSubscription } from "../_lib/manageSubscription";
+import { saveSubscription } from "./lib/manageSubscription";
 
 async function buffer(readable: Readable) {
 	const chunks = [];
@@ -34,6 +32,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 	if (req.method === 'POST') {
 		const buf = await buffer(req)
 		const secret = req.headers['stripe-signature']
+
+		const stripe = new Stripe(
+			process.env.STRIPE_API_KEY,
+			{
+				apiVersion: '2020-08-27',
+				appInfo: {
+					name: 'ignews',
+					version: '0.1.0'
+				}
+			}
+		)
 
 		let event: Stripe.Event;
 

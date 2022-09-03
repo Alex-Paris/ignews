@@ -2,7 +2,6 @@ import { GetStaticProps } from 'next'
 import Head from 'next/head'
 
 import { SubscribeButton } from '../components/SubscribeButton'
-import { stripe } from '../services/stripe'
 
 import styles from './home.module.scss'
 
@@ -39,6 +38,19 @@ export default function Home({ product }: HomeProps) {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
+  const Stripe = (await import('stripe')).default;
+
+  const stripe = new Stripe(
+    process.env.STRIPE_API_KEY,
+    {
+      apiVersion: '2020-08-27',
+      appInfo: {
+        name: 'ignews',
+        version: '0.1.0'
+      }
+    }
+  )
+
   const price = await stripe.prices.retrieve('price_1KcuXNKl1stt232pcKgck8Y2', {
     expand: ['product']
   })
